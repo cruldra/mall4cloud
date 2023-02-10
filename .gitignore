@@ -60,3 +60,14 @@ gen_code
 
 ### node ###
 node_modules
+doc/中间件docker-compse一键安装/canal/conf/example/meta.dat
+doc/中间件docker-compse一键安装/canal/logs
+doc/中间件docker-compse一键安装/elasticsearch/data
+doc/中间件docker-compse一键安装/elasticsearch/logs
+doc/中间件docker-compse一键安装/minio/data
+doc/中间件docker-compse一键安装/mysql/data
+doc/中间件docker-compse一键安装/nacos/logs
+doc/中间件docker-compse一键安装/rocketmq/broker/logs
+doc/中间件docker-compse一键安装/rocketmq/broker/store
+doc/中间件docker-compse一键安装/rocketmq/namesrv/logs
+doc/中间件docker-compse一键安装/rocketmq/namesrv/store

@@ -1,10 +1,11 @@
 version: "3.5"
 
 services:
+  # mysql
   mall4cloud-mysql:
     image: mysql:8.0
     container_name: mall4cloud-mysql
-    restart: always
+    restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=root
     ports:
@@ -14,11 +15,11 @@ services:
       - ./mysql/my.cnf:/etc/mysql/my.cnf
       - ./mysql/initdb:/docker-entrypoint-initdb.d
       - ./mysql/mysql-files:/var/lib/mysql-files
-
+  # 对象存储
   mall4cloud-minio:
     image: minio/minio:RELEASE.2021-06-17T00-10-46Z
     container_name: mall4cloud-minio
-    restart: always
+    restart: unless-stopped
     command: server /data
     ports:
       - 9000:9000
@@ -27,18 +28,18 @@ services:
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=admin123456
-
+  #　缓存
   mall4cloud-redis:
     image: redis:6.2
     container_name: mall4cloud-redis
-    restart: always
+    restart: unless-stopped
     ports:
       - 6379:6379
-
+  # 配置和服务注册
   mall4cloud-nacos:
     image: nacos/nacos-server:2.0.2
     container_name: mall4cloud-nacos
-    restart: always
+    restart: unless-stopped
     depends_on:
       - mall4cloud-mysql
     ports:
@@ -51,48 +52,65 @@ services:
       - MODE=standalone
       - PREFER_HOST_MODE=hostname
       - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=192.168.1.46
+      - MYSQL_SERVICE_HOST=192.168.0.107
       - MYSQL_SERVICE_DB_NAME=mall4cloud_nacos
       - MYSQL_SERVICE_USER=root
       - MYSQL_SERVICE_PASSWORD=root
     volumes:
       - ./nacos/logs:/home/nacos/logs
 
+  # 分布式事务处理
+#  mall4cloud-seata:
+#    image: seataio/seata-server:1.4.2
+#    container_name: mall4cloud-seata
+#    restart: unless-stopped
+#    depends_on:
+#      - mall4cloud-mysql
+#      - mall4cloud-nacos
+#    ports:
+#      - 8091:8091
+#    environment:
+#      - SEATA_IP=192.168.0.107
+#      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
+#    volumes:
+#      - ./seata:/root/seata-config
 
   mall4cloud-seata:
-    image: seataio/seata-server:1.4.2
+    image: seataio/seata-server:1.5.2
     container_name: mall4cloud-seata
-    restart: always
+    restart: unless-stopped
     depends_on:
       - mall4cloud-mysql
       - mall4cloud-nacos
     ports:
       - 8091:8091
     environment:
-      - SEATA_IP=192.168.1.46
-      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
+      - SEATA_IP=192.168.0.107
     volumes:
-      - ./seata:/root/seata-config
+      - ./seata/application.yml:/seata-server/resources/application.yml
 
+  # 日志分析服务
   mall4cloud-elasticsearch:
     image: elasticsearch:7.13.2
     container_name: mall4cloud-elasticsearch
-    restart: always
+    restart: unless-stopped
     ports:
       - 9200:9200
       - 9300:9300
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+#      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./elasticsearch/data:/usr/share/elasticsearch/data
       - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
 
+  # 日志可视化
   mall4cloud-kibana:
     image: kibana:7.13.2
     container_name: mall4cloud-kibana
-    restart: always
+    restart: unless-stopped
     ports:
       - 5601:5601
     links:
@@ -100,26 +118,24 @@ services:
     depends_on:
       - mall4cloud-elasticsearch
 
+ #跨机房同步,增量数据订阅和消费
   mall4cloud-canal:
     image: canal/canal-server:v1.1.5
     container_name: mall4cloud-canal
-    restart: always
+    restart: unless-stopped
     ports:
       - 11111:11111
     environment:
-      - SEATA_IP=192.168.1.46
+      - SEATA_IP=192.168.0.107
     volumes:
       - ./canal/conf/example:/home/admin/canal-server/conf/example
       - ./canal/conf/canal.properties:/home/admin/canal-server/conf/canal.properties
       - ./canal/logs:/home/admin/canal-server/logs
-
-
-
-
+  # rocketmq名称服务
   mall4cloud-rocketmq-namesrv:
     image: foxiswho/rocketmq:4.8.0
     container_name: mall4cloud-rocketmq-namesrv
-    restart: always
+    restart: unless-stopped
     ports:
       - 9876:9876
     volumes:
@@ -133,11 +149,11 @@ services:
         aliases:
           - mall4cloud-rocketmq-namesrv
 
-
+  # rocketmq消息代理服务器
   mall4cloud-rocketmq-broker:
     image: foxiswho/rocketmq:4.8.0
     container_name: mall4cloud-rocketmq-broker
-    restart: always
+    restart: unless-stopped
     ports:
       - 10909:10909
       - 10911:10911
@@ -155,11 +171,11 @@ services:
         aliases:
           - mall4cloud-rocketmq-broker
 
-
+#  # rocketmq控制台
   mall4cloud-rocketmq-console:
     image: styletang/rocketmq-console-ng
     container_name: mall4cloud-rocketmq-console
-    restart: always
+    restart: unless-stopped
     ports:
       - 8180:8080
     environment:
@@ -170,8 +186,6 @@ services:
       rocketmq:
         aliases:
           - mall4cloud-rocketmq-console
-
-
 networks:
   rocketmq:
     name: rocketmq

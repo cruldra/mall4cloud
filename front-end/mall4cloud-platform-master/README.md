@@ -116,3 +116,8 @@ https://panjiachen.gitee.io/vue-element-admin-site/zh/guide/
 ## 你的点赞鼓励，是我们前进的动力~
 ## 你的点赞鼓励，是我们前进的动力~
 ## 你的点赞鼓励，是我们前进的动力~
+
+# 本地运行
+```bash
+docker run -i -t --rm  -v "D:\Workspace\加油卡回收系统\mall4cloud\front-end\mall4cloud-platform-master:/app/wecredo-bci-ui"   -p 8085:80 node:14.15.2 sh -c "cd /app/wecredo-bci-ui ;npm run dev"
+```

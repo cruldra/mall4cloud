@@ -229,7 +229,7 @@ export default {
           url: '/pages/free-shop/free-shop'
         })
       } else {
-         uni.showToast({
+        uni.showToast({
           title: '请登录账号',
           duration: 2000,
           icon: 'error'
