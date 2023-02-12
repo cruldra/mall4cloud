@@ -72,31 +72,11 @@ docker-compose up -d mall4cloud-redis
 docker-compose up -d mall4cloud-minio
 docker-compose up -d mall4cloud-nacos
 docker-compose up -d mall4cloud-seata
-## 要把所有application都跑起来只需要上面几个中间件
-
-# elasticsearch可能会导致docker卡死
 docker-compose up -d mall4cloud-elasticsearch
-
-# 换成下面的命令(bash)
-docker run --name mall4cloud-elasticsearch \
-           --restart unless-stopped \
-           -p 9200:9200 \
-           -p 9300:9300 \
-           -e "discovery.type=single-node" \
-           -v D:\Workspace\加油卡回收系统\mall4cloud\doc\中间件docker-compse一键安装\elasticsearch\config\elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
-           -v D:\Workspace\加油卡回收系统\mall4cloud\doc\中间件docker-compse一键安装\elasticsearch\data:/usr/share/elasticsearch/data \
-           -v D:\Workspace\加油卡回收系统\mall4cloud\doc\中间件docker-compse一键安装\elasticsearch\plugins:/usr/share/elasticsearch/plugins \
-           elasticsearch:7.13.2
-
-#把上面的命令转成单行
-docker run --name mall4cloud-elasticsearch --restart unless-stopped -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node"    elasticsearch:7.17.9
-# -v D:\Workspace\加油卡回收系统\mall4cloud\doc\中间件docker-compse一键安装\elasticsearch\plugins:/usr/share/elasticsearch/plugins
-
 docker-compose up -d mall4cloud-kibana
-
 docker-compose up -d mall4cloud-canal
-
 docker-compose up -d mall4cloud-rocketmq-namesrv
 docker-compose up -d mall4cloud-rocketmq-broker
+docker-compose up -d mall4cloud-rocketmq-console
 
 ```

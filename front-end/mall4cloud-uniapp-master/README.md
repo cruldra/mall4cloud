@@ -102,5 +102,9 @@ https://gitee.com/gz-yami/mall4j
 
 # 本地运行
 ```bash
+# 用docker不能差量编译
 docker run -i -t --rm  -v "D:\Workspace\加油卡回收系统\mall4cloud\front-end\mall4cloud-uniapp-master:/app/wecredo-bci-ui"   -p 8084:80 node:14.15.2 sh -c "cd /app/wecredo-bci-ui ;npm run serve"
+
+# 用本机的node可以
+npm run serve
 ```

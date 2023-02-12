@@ -121,3 +121,10 @@ https://panjiachen.gitee.io/vue-element-admin-site/zh/guide/
 https://gitee.com/gz-yami/mall4j
 
 更多内容请查看 主项目 https://gitee.com/gz-yami/mall4cloud
+
+
+
+# 本地运行
+```bash
+docker run -i -t --rm  -v "D:\Workspace\加油卡回收系统\mall4cloud\front-end\mall4cloud-multishop-master:/app/wecredo-bci-ui"   -p 8086:9527 node:14.15.2 sh -c "cd /app/wecredo-bci-ui ;npm run dev"
+```

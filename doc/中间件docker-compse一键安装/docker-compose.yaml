@@ -7,6 +7,7 @@ services:
     container_name: mall4cloud-mysql
     restart: unless-stopped
     environment:
+      - TZ=Asia/Shanghai
       - MYSQL_ROOT_PASSWORD=root
     ports:
       - 3306:3306
@@ -25,6 +26,7 @@ services:
       - 9000:9000
     volumes:
       - ./minio/data:/data
+      - ./Shanghai:/etc/localtime
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=admin123456
@@ -35,6 +37,8 @@ services:
     restart: unless-stopped
     ports:
       - 6379:6379
+    environment:
+      - TZ=Asia/Shanghai
   # 配置和服务注册
   mall4cloud-nacos:
     image: nacos/nacos-server:2.0.2
@@ -58,25 +62,9 @@ services:
       - MYSQL_SERVICE_PASSWORD=root
     volumes:
       - ./nacos/logs:/home/nacos/logs
-
   # 分布式事务处理
-#  mall4cloud-seata:
-#    image: seataio/seata-server:1.4.2
-#    container_name: mall4cloud-seata
-#    restart: unless-stopped
-#    depends_on:
-#      - mall4cloud-mysql
-#      - mall4cloud-nacos
-#    ports:
-#      - 8091:8091
-#    environment:
-#      - SEATA_IP=192.168.0.107
-#      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
-#    volumes:
-#      - ./seata:/root/seata-config
-
   mall4cloud-seata:
-    image: seataio/seata-server:1.5.2
+    image: seataio/seata-server:1.4.2
     container_name: mall4cloud-seata
     restart: unless-stopped
     depends_on:
@@ -86,8 +74,24 @@ services:
       - 8091:8091
     environment:
       - SEATA_IP=192.168.0.107
+      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
     volumes:
-      - ./seata/application.yml:/seata-server/resources/application.yml
+      - ./seata:/root/seata-config
+      - ./Shanghai:/etc/localtime
+  # 分布式事务处理
+#  mall4cloud-seata:
+#    image: seataio/seata-server:1.5.2
+#    container_name: mall4cloud-seata
+#    restart: unless-stopped
+#    depends_on:
+#      - mall4cloud-mysql
+#      - mall4cloud-nacos
+#    ports:
+#      - 8091:8091
+#    environment:
+#      - SEATA_IP=192.168.0.107
+#    volumes:
+#      - ./seata/application.yml:/seata-server/resources/application.yml
 
   # 日志分析服务
   mall4cloud-elasticsearch:
@@ -99,6 +103,7 @@ services:
       - 9300:9300
     environment:
       - discovery.type=single-node
+      - TZ=Asia/Shanghai
 #      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
@@ -111,6 +116,8 @@ services:
     image: kibana:7.13.2
     container_name: mall4cloud-kibana
     restart: unless-stopped
+    environment:
+        - TZ=Asia/Shanghai
     ports:
       - 5601:5601
     links:
@@ -120,12 +127,13 @@ services:
 
  #跨机房同步,增量数据订阅和消费
   mall4cloud-canal:
-    image: canal/canal-server:v1.1.5
+    image: canal/canal-server:latest
     container_name: mall4cloud-canal
     restart: unless-stopped
     ports:
       - 11111:11111
     environment:
+      - TZ=Asia/Shanghai
       - SEATA_IP=192.168.0.107
     volumes:
       - ./canal/conf/example:/home/admin/canal-server/conf/example
@@ -142,6 +150,7 @@ services:
       - ./rocketmq/namesrv/logs:/home/rocketmq/logs
       - ./rocketmq/namesrv/store:/home/rocketmq/store
     environment:
+      TZ: Asia/Shanghai
       JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms512M -Xmx512M -Xmn128m"
     command: ["sh","mqnamesrv"]
     networks:
@@ -162,6 +171,7 @@ services:
       - ./rocketmq/broker/store:/home/rocketmq/store
       - ./rocketmq/broker/conf/broker.conf:/etc/rocketmq/broker.conf
     environment:
+      TZ: Asia/Shanghai
       JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms512M -Xmx512M -Xmn128m"
     command: ["sh","mqbroker","-c","/etc/rocketmq/broker.conf","-n","mall4cloud-rocketmq-namesrv:9876","autoCreateTopicEnable=true"]
     depends_on:
@@ -179,6 +189,7 @@ services:
     ports:
       - 8180:8080
     environment:
+      TZ: Asia/Shanghai
       JAVA_OPTS: "-Drocketmq.namesrv.addr=mall4cloud-rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
     depends_on:
       - mall4cloud-rocketmq-namesrv

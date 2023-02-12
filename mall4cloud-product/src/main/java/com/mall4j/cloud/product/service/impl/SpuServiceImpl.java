@@ -58,6 +58,9 @@ public class SpuServiceImpl implements SpuService {
     @Autowired
     private SpuExtensionService spuExtensionService;
 
+    /**
+     * 商品规格属性关联信息
+     */
     @Autowired
     private SpuAttrValueService spuAttrValueService;
 
@@ -130,7 +133,6 @@ public class SpuServiceImpl implements SpuService {
         Spu spu = mapperFacade.map(spuDTO, Spu.class);
         spu.setShopId(AuthUserContext.get().getTenantId());
         spu.setStatus(StatusEnum.ENABLE.value());
-        spu.setShopId(AuthUserContext.get().getTenantId());
         // 1.保存商品信息
         spuMapper.save(spu);
         // 2.保存商品其他信息，规格、详细、扩展信息
@@ -146,6 +148,8 @@ public class SpuServiceImpl implements SpuService {
         spuDetail.setDetail(spuDTO.getDetail());
         spuDetailService.save(spuDetail);
 
+
+        //保存商品扩展信息,目前主要是销量和库存
         SpuExtension spuExtension = new SpuExtension();
         spuExtension.setSpuId(spu.getSpuId());
         spuExtension.setActualStock(spuDTO.getTotalStock());

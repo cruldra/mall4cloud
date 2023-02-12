@@ -3,7 +3,8 @@ package com.mall4j.cloud.common.security;
 import com.mall4j.cloud.api.auth.bo.UserInfoInTokenBO;
 
 /**
- * @author FrozenWatermelon
+ * 认证用户上下文
+ * @author cruldra
  * @date 2020/7/16
  */
 public class AuthUserContext {

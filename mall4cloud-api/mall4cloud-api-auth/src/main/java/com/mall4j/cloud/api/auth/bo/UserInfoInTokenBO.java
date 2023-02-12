@@ -5,8 +5,8 @@ import com.mall4j.cloud.api.auth.constant.SysTypeEnum;
 /**
  * 保存在token信息里面的用户信息
  *
- * com.mall4j.cloud.auth.service.impl.AuthAccountServiceImpl
- * com.mall4j.cloud.auth.controller.LoginController
+ * @see com.mall4j.cloud.auth.service.impl.AuthAccountServiceImpl
+ * @see com.mall4j.cloud.auth.controller.LoginController
  * @author FrozenWatermelon
  * @date 2020/7/3
  */
